@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="com.tzutalin.dlib-android-app:dlib-1.0.3">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/dlib-1.0.3.aar/321ae92bfe6af0b7c627afa6bdd2efff/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/dlib-1.0.3.aar/321ae92bfe6af0b7c627afa6bdd2efff/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/dlib-1.0.3.aar/c0680b8d9d80f8423e81aaa2343bb9b7/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/dlib-1.0.3.aar/c0680b8d9d80f8423e81aaa2343bb9b7/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -6,10 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -48,7 +45,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         //Log.d(TAG, "w: " + image.getWidth());
 
         PeopleDet peopleDet = new PeopleDet();
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.messi);
+        Bitmap BG = BitmapFactory.decodeResource(getResources(), R.drawable.messi);
+        Bitmap hat = BitmapFactory.decodeResource(getResources(), R.drawable.hat);
+        Bitmap body = BitmapFactory.decodeResource(getResources(), R.drawable.body);
+        Bitmap beard = BitmapFactory.decodeResource(getResources(), R.drawable.beard);
         int width = getWindowManager().getDefaultDisplay().getWidth();
         int height = getWindowManager().getDefaultDisplay().getHeight();
 
@@ -56,58 +56,87 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         canvas = new Canvas(newb);
         canvas.drawColor(Color.WHITE);
 
-        canvas.drawBitmap(bmp, 0, 0, paint);
+        Bitmap resizeBG =
+            Bitmap.createScaledBitmap(BG, width, BG.getHeight() * width / BG.getWidth(), false);
+        canvas.drawBitmap(resizeBG, 0, 0, paint);
         image.setImageBitmap(newb);
 
         List<VisionDetRet> results =
-            peopleDet.detBitmapFace(bmp, Constants.getFaceShapeModelPath());
+            peopleDet.detBitmapFace(resizeBG, Constants.getFaceShapeModelPath());
         Log.d(TAG, "onCreate: " + results);
         for (final VisionDetRet ret : results) {
             Log.d(TAG, "onCreate: DetResult");
-            String label = ret.getLabel(); // If doing face detection, it will be 'Face'
+            //String label = ret.getLabel(); // If doing face detection, it will be 'Face'
             int rectLeft = ret.getLeft();
+            Log.d(TAG, "Left: " + rectLeft);
             int rectTop = ret.getTop();
             int rectRight = ret.getRight();
             int rectBottom = ret.getBottom();
             ArrayList<Point> landmarks = ret.getFaceLandmarks();
-
-            Paint paint = new Paint();
-            paint.setColor(Color.WHITE);
-            paint.setAntiAlias(true);
-
-            Path path = new Path();
-            path.setFillType(Path.FillType.INVERSE_EVEN_ODD);
-
-            //下臉的輪廓
-            for (int i = 0; i <= 16; i++){
-                int pointX = landmarks.get(i).x;
-                int pointY = landmarks.get(i).y;
-                path.lineTo(pointX, pointY);
-            }
-
-            //上臉的輪廓
             int pointX, pointY;
-            int length = landmarks.get(27).x - landmarks.get(23).x;
-            //右上角
-            pointX = landmarks.get(16).x;
-            pointY = landmarks.get(25).y + length;
+            int length = landmarks.get(27).y - landmarks.get(23).y;
+            int w = landmarks.get(16).x - landmarks.get(0).x;
 
-            path.lineTo(pointX, pointY);
-            //左上角
-            pointX = landmarks.get(1).x;
-            pointY = landmarks.get(25).y + length;
-            path.lineTo(pointX, pointY);
-            //回到原點
-            path.lineTo(landmarks.get(0).x, landmarks.get(0).y);
+            //Hat
+            Bitmap resizeHat = Bitmap.createScaledBitmap(hat, w *4/5, length * 10, false);
+            canvas.drawBitmap(resizeHat, landmarks.get(27).x - w *2/5, rectTop - length * 10, paint);
 
+            //Body
+            Bitmap resizeBody = Bitmap.createScaledBitmap(body, w*2, w*2, false);
+            canvas.drawBitmap(resizeBody, landmarks.get(0).x -w/2, landmarks.get(8).y, paint);
 
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-            canvas.drawPath(path, paint);
-            canvas.drawBitmap(newb, 0, 0, paint);
+            //test
+            //int i = 48;
+            //canvas.drawCircle(landmarks.get(i).x, landmarks.get(i).y, 5, paint);
 
-            Bitmap croppedBitmap = Bitmap.createBitmap(newb, rectLeft-50, rectTop-50, rectRight - rectLeft+50, rectBottom - rectTop+50);
-            canvas.drawBitmap(croppedBitmap, 0, 0, paint);
+            //Beard
+            w = landmarks.get(14).x - landmarks.get(3).x;
+            Bitmap resizeBeard = Bitmap.createScaledBitmap(beard, w, w*3/2, false);
+            canvas.drawBitmap(resizeBeard, landmarks.get(3).x, landmarks.get(48).y -w/4, paint);
+            //Paint paint = new Paint();
+            //paint.setColor(Color.WHITE);
+            //paint.setAntiAlias(true);
+            //
+            //Path path = new Path();
+            //path.setFillType(Path.FillType.INVERSE_EVEN_ODD);
+            //
+            ////下臉的輪廓
+            //for (int i = 0; i <= 16; i++){
+            //    int pointX = landmarks.get(i).x;
+            //    int pointY = landmarks.get(i).y;
+            //    path.lineTo(pointX, pointY);
+            //}
+            //
+            ////上臉的輪廓
+            //int pointX, pointY;
+            //int length = landmarks.get(27).x - landmarks.get(23).x;
+            ////右上角
+            //pointX = landmarks.get(16).x;
+            //pointY = landmarks.get(25).y + length;
+            //
+            //path.lineTo(pointX, pointY);
+            ////左上角
+            //pointX = landmarks.get(1).x;
+            //pointY = landmarks.get(25).y + length;
+            //path.lineTo(pointX, pointY);
+            ////回到原點
+            //path.lineTo(landmarks.get(0).x, landmarks.get(0).y);
+            //
+            //
+            //paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            //canvas.drawPath(path, paint);
+            //canvas.drawBitmap(newb, 0, 0, paint);
+            //
+            //Bitmap croppedBitmap = Bitmap.createBitmap(newb, rectLeft-50, rectTop-50, rectRight - rectLeft+50, rectBottom - rectTop+100);
+            //canvas.drawColor(Color.WHITE);
+            //
+            //Log.d(TAG, "onCreate: width:" + width + "  ,length: + " + length);
+            //canvas.drawBitmap(Bitmap.createScaledBitmap(croppedBitmap,
+            //    800, croppedBitmap.getHeight() * 800/croppedBitmap.getWidth(), false), 400, 600, paint);
+            ////image.setImageBitmap(Bitmap.createScaledBitmap(croppedBitmap, 600, 800, false));
+            //image.draw(canvas);
         }
+        //image.setImageBitmap(newb);
     }
 
     @AfterPermissionGranted(STORAGE_PERM) public void storagePermission() {
